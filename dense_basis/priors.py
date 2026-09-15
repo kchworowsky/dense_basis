@@ -167,8 +167,11 @@ class Priors(object):
         if self.dust_model == 'Salim18':
             # using parameters from Salim+18, implemented as Kriek & Conroy+13 (no free bump)
             slope_delta = np.random.uniform(size=size)*(1.6) - 1.2 #  power-law slope deviation in [-1.2, 0.4]
-            # B_grid = np.linspace(-2.0, 6.0, 5) # UV bump amplitude / E_b in [-2.0, 6.0] in steps of 2
-            # B = np.random.choice(B_grid, size=size)
+
+            # NOTE: B is currently not used due to limitations in FSPS!!! 
+            B_grid = np.linspace(-2.0, 6.0, 5) # UV bump amplitude / E_b in [-2.0, 6.0] in steps of 2
+            B = np.random.choice(B_grid, size=size)
+            
             if self.dust_prior == 'flat':
                 Av = np.random.uniform(size=size)*(self.Av_max-self.Av_min) + self.Av_min
             elif self.dust_prior == 'exp':

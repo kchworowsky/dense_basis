@@ -120,11 +120,29 @@ def makespec(specdetails, priors, sp, cosmo, filter_list = [], filt_dir = [], re
     sp.set_tabular_sfh(timeax, sfh)
     # sp.params['dust_type'] = 2
     # sp.params['dust1'] = dust1_rand
-    sp.params['dust2'] = dust
+    # --------------------- edited by KC 09/15/2026 to implement a Salim+18-like prior -----------------------------
+    # sp.params['dust2'] = dust
+
+    if priors.dust_model == 'Calzetti':
+        sp.params['dust_type'] = 2
+        sp.params['dust1']     = 0.0
+        sp.params['dust2']     = float(dust)          # scalar Av
+    elif priors.dust_model == 'Salim18':              # KC13 curve as applied by FSPS
+        slope_delta, B, Av = dust                     # B unused in dust_type=4
+        sp.params['dust_type']  = 4
+        sp.params['dust1']      = 0.0
+        sp.params['dust2']      = float(Av)
+        sp.params['dust_index'] = float(slope_delta)
+    elif priors.dust_model == 'CF00':
+        raise NotImplementedError('CF00 not wired into makespec')
+    else:
+        raise ValueError('unknown dust_model: %s' % priors.dust_model)
+    # ----------------------------------------------------------------------------------------------------------------   
+    
     sp.params['logzsol'] = met
     sp.params['gas_logz'] = met # matching stellar to gas-phase metallicity
     sp.params['zred'] = zval
-
+   
     #lam, spec = sp.get_spectrum(tage = cosmo.age(zval).value, peraa = peraa)
     # adding 0.1 Myr here to get the last couple of FSPS SSPs
     lam, spec = sp.get_spectrum(tage = cosmo.age(zval).value+1e-4, peraa = peraa)

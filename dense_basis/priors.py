@@ -163,6 +163,21 @@ class Priors(object):
             else:
                 print('unknown dust_prior. options are flat and exp')
             return slope_ism, slope_bc, mu_ISM_v, tau_v
+        # ------------------ Implemented by KC 09/15/2026 ------------------------
+        if self.dust_model == 'Salim18':
+            # using parameters from Salim+18
+            slope_delta = np.random.uniform(size=size)*(1.6) - 1.2 #  power-law slope deviation in [-1.2, 0.4] 
+            B_grid = np.linspace(-2.0, 6.0, 5) # UV bump amplitude / E_b in [-2.0, 6.0] in steps of 2
+            B = np.random.choice(B_grid, size=size)
+            if self.dust_prior == 'flat':
+                Av = np.random.uniform(size=size)*(self.Av_max-self.Av_min) + self.Av_min
+            elif self.dust_prior == 'exp':
+                Av = np.random.exponential(size=size)*(self.Av_exp_scale)
+            else:
+                print('unknown dust_prior. options are flat and exp')
+                return np.nan
+            return slope_delta, B, Av
+        # ------------------------------------------------------------------------
         else:
             print('not currently coded up, please email me regarding this functionality.')
             return np.zeros(size=size)*np.nan
